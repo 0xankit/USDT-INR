@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./exchangeRate.sol";
 
 
 contract INRtoken is ERC20, Ownable{
@@ -22,7 +23,8 @@ contract INRtoken is ERC20, Ownable{
     // }
 
     function mint(uint256 amount) public onlyOwner {
-        _mint(msg.sender, amount);
+        uint256 _amount = amount/rate;
+        _mint(msg.sender, _amount);
     }
 
     function burn( uint256 amount) public onlyOwner {

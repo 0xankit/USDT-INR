@@ -18,7 +18,7 @@ import '@chainlink/contracts/src/v0.8/ConfirmedOwner.sol';
 contract USDtoINR is ChainlinkClient, ConfirmedOwner {
     using Chainlink for Chainlink.Request;
 
-    uint256 public volume;
+    uint256 public rate;
     bytes32 private jobId;
     uint256 private fee;
 
@@ -75,9 +75,9 @@ contract USDtoINR is ChainlinkClient, ConfirmedOwner {
     /**
      * Receive the response in the form of uint256
      */
-    function fulfill(bytes32 _requestId, uint256 _volume) public recordChainlinkFulfillment(_requestId) {
-        emit RequestVolume(_requestId, _volume);
-        volume = _volume;
+    function fulfill(bytes32 _requestId, uint256 _rate) public recordChainlinkFulfillment(_requestId) {
+        emit RequestVolume(_requestId, _rate);
+        rate = _rate;
     }
 
     /**
