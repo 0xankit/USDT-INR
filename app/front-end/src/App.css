@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Genos&display=swap');
+html, body {
+  height: 100vh;
+  background-color: #000;
+}
+.App {
+  text-align: center;
+  background-color: black;
+  color: #fff;
+  width: 100vw;
+  height: 100vh;
+}
+
+.custom-modal {
+  font-family: 'Genos', sans-serif;
+}
