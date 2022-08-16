@@ -34,7 +34,7 @@ contract INRtoken is ERC20, USDtoINR{
         (bool sent) = usdt.transferFrom(msg.sender, address(this), amount);
         require(sent, "Failed to transfer USDC from user to vendor");
         uint256 _rate = getRate();
-        uint256 _amount = amount.mul(_rate).div(10**18).mul(995).div(1000);
+        uint256 _amount = amount.mul(_rate.div(10**18)).mul(995).div(1000);
         require(_amount > 0, "Pool: Amount is too small");
         _mint(msg.sender, _amount);
         // _mint(msg.sender, amount);
@@ -44,9 +44,9 @@ contract INRtoken is ERC20, USDtoINR{
         // _burn(msg.sender, amount);
         require(amount > 0, "Pool: Amount is too small");
         uint256 _rate = getRate();
-        uint256 _amount = amount.div(_rate).mul(10**18).mul(995).div(1000);
+        uint256 _amount = amount.div(_rate.div(10**18)).mul(995).div(1000); // inr -> usdc
         require(_amount > 0, "Pool: USDC Amount is too small");
-        (bool sent) = usdt.transferFrom(address(this), msg.sender, _amount);
+        (bool sent) = usdt.transfer(msg.sender, _amount);
         require(sent, "Failed to transfer USDC from vendor to user");
         _burn(msg.sender, amount);
     }

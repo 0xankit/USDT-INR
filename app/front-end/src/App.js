@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import './App.css';
-import { burnINR, getBalances, getINR, getUSDC, mintINR } from './scripts/utils';
+import { approveUSDC, burnINR, getBalances, getINR, getUSDC, mintINR } from './scripts/utils';
 
 import {
     buttonStyle,
@@ -48,7 +48,7 @@ function App() {
     const [inrAmount, setInrAmount] = useState(0);
     const [aprroxINR,setApproxINR] = useState(0);
     const [aprroxUSDC,setApproxUSDC] = useState(0);
-
+    const [maxUSDC, setMaxUSDC] = useState(0);
 
 
 
@@ -147,6 +147,12 @@ function App() {
       await burnINR(inrAmount, walletAccount)
     }
 
+    const handleApproveUSDC = async(event) => {
+      event.preventDefault();
+      console.log("maxUSDC:",maxUSDC)
+      await approveUSDC(maxUSDC, walletAccount)
+    }
+
 
     return (
         <div className="App">
@@ -229,6 +235,35 @@ function App() {
                     <div className="connect-button" onClick={handleDisconnect} style={buttonStyle}>
                         Disconnect
                     </div>
+                </div>
+
+                <div className="row" style={rowStyle}>
+                    <div className="header-title" style={{marginBottom: '20px'}}>Approve Max USDC to use:
+                    </div>
+                    <div
+                         className="connect-button">
+                        {
+                            isConnected ? (
+                                <div className="right-status" style={{
+                                    width: '100%',
+                                    textOverflow: 'ellipsis',
+                                    overflow: 'hidden'
+                                }}>You Entered: {maxUSDC}</div>
+
+                            ) : (
+
+                                <div className="right-status" style={{width: '100%'}}></div>
+
+                            )
+                        }
+                    </div>
+                    <form onSubmit={handleApproveUSDC}>
+                      <label>
+                        USDC: 
+                        <input type="number" value={maxUSDC} onChange={(e) => setMaxUSDC(e.target.value)} />
+                      </label>
+                      <input type="submit" value="Submit" />
+                    </form>
                 </div>
 
                 <div className="row" style={rowStyle}>
