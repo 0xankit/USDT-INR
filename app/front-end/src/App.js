@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import './App.css';
-import { burnINR, getBalances, mintINR } from './scripts/utils';
+import { burnINR, getBalances, getINR, getUSDC, mintINR } from './scripts/utils';
 
 import {
     buttonStyle,
@@ -46,6 +46,8 @@ function App() {
     const [balance,setBalance]=useState({"USDC": 0, "INR": 0})
     const [usdcAmount, setUsdcAmount] = useState(0);
     const [inrAmount, setInrAmount] = useState(0);
+    const [aprroxINR,setApproxINR] = useState(0);
+    const [aprroxUSDC,setApproxUSDC] = useState(0);
 
 
 
@@ -118,12 +120,18 @@ function App() {
         alert("invalid USDC amount")
         setUsdcAmount(0)
       }
-      if(inrAmount>balance.USDC){
-        alert("insufficient USDC amount")
+      if(inrAmount>balance.inrAmount){
+        alert("insufficient INR amount")
         setInrAmount(0)
-      } else if(usdcAmount<0){
-        alert("invalid USDC amount")
+      } else if(inrAmount<0){
+        alert("invalid INR amount")
         setInrAmount(0)
+      }
+      if(usdcAmount !==0) {
+        getINR(usdcAmount).then((_balance)=>setApproxINR(_balance))
+      }
+      if(inrAmount !==0) {
+        getUSDC(inrAmount).then((_balance)=>setApproxUSDC(_balance))
       }
     },[usdcAmount,balance,inrAmount]) 
 
@@ -159,7 +167,7 @@ function App() {
 
                             ) : (
 
-                                <div className="right-status" style={{width: '100%'}}>USDC: {balance.USDC}<br></br>INR: {balance.INR}</div>
+                                <div className="right-status" style={{width: '100%'}}></div>
 
                             )
                         }
@@ -226,6 +234,23 @@ function App() {
                 <div className="row" style={rowStyle}>
                     <div className="header-title" style={{marginBottom: '20px'}}>Mint INR
                     </div>
+                    <div
+                         className="connect-button">
+                        {
+                            isConnected ? (
+                                <div className="right-status" style={{
+                                    width: '100%',
+                                    textOverflow: 'ellipsis',
+                                    overflow: 'hidden'
+                                }}>You Will get: {aprroxINR}</div>
+
+                            ) : (
+
+                                <div className="right-status" style={{width: '100%'}}></div>
+
+                            )
+                        }
+                    </div>
                     <form onSubmit={handleMintINR}>
                       <label>
                         USDC: 
@@ -237,6 +262,23 @@ function App() {
 
                 <div className="row" style={rowStyle}>
                     <div className="header-title" style={{marginBottom: '20px'}}>Burn INR
+                    </div>
+                    <div
+                         className="connect-button">
+                        {
+                            isConnected ? (
+                                <div className="right-status" style={{
+                                    width: '100%',
+                                    textOverflow: 'ellipsis',
+                                    overflow: 'hidden'
+                                }}>You Will get: {aprroxUSDC}</div>
+
+                            ) : (
+
+                                <div className="right-status" style={{width: '100%'}}></div>
+
+                            )
+                        }
                     </div>
                     <form onSubmit={handleBurnINR}>
                       <label>
