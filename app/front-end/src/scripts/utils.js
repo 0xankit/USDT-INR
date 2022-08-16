@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 
 const Web3 = require("web3");
-// require('dotenv').config()
 const web3 = new Web3(
   "https://goerli.infura.io/v3/900b48c2d82a44d09ba0d57901aa662a"
 );

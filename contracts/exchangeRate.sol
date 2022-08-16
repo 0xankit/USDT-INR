@@ -22,7 +22,7 @@ contract USDtoINR is ChainlinkClient, ConfirmedOwner {
     bytes32 private jobId;
     uint256 private fee;
 
-    event RequestVolume(bytes32 indexed requestId, uint256 volume);
+    event RequestRate(bytes32 indexed requestId, uint256 rate);
 
     /**
      * @notice Initialize the link token and target oracle
@@ -44,7 +44,7 @@ contract USDtoINR is ChainlinkClient, ConfirmedOwner {
      * Create a Chainlink request to retrieve API response, find the target
      * data, then multiply by 1000000000000000000 (to remove decimal places from data).
      */
-    function requestVolumeData() public returns (bytes32 requestId) {
+    function requestRateData() public returns (bytes32 requestId) {
         Chainlink.Request memory req = buildChainlinkRequest(jobId, address(this), this.fulfill.selector);
 
         // Set the URL to perform the GET request on
@@ -76,8 +76,13 @@ contract USDtoINR is ChainlinkClient, ConfirmedOwner {
      * Receive the response in the form of uint256
      */
     function fulfill(bytes32 _requestId, uint256 _rate) public recordChainlinkFulfillment(_requestId) {
-        emit RequestVolume(_requestId, _rate);
+        emit RequestRate(_requestId, _rate);
         rate = _rate;
+    }
+
+    function getRate() public returns (uint256 _rate) {
+        requestRateData();
+        return rate;
     }
 
     /**

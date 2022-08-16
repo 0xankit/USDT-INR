@@ -10,13 +10,16 @@ import "./safeMath.sol";
 
 contract INRtoken is ERC20, USDtoINR{
     using SafeMath for uint256;
-    IERC20 usdt = IERC20(0x07865c6E87B9F70255377e024ace6630C1Eaa37F);
-    uint256 swapFEE = uint256(995).div(1000);
+    IERC20 usdt = IERC20(address(0x07865c6E87B9F70255377e024ace6630C1Eaa37F));
     address public presenter;
     // USDtoINR public exchangeRate = new USDtoINR();
 
     constructor(uint256 initialSupply) ERC20("Rupees", "INR") {
+        _mint(msg.sender, initialSupply);
+    }
 
+    function decimals() public view virtual override returns (uint8) {
+        return 6;
     }
     // function setPresenter(address _presenter) onlyOwner public {
     //     presenter = _presenter;
@@ -28,19 +31,28 @@ contract INRtoken is ERC20, USDtoINR{
     // }
 
     function mint(uint256 amount) public {
-        usdt.transferFrom(msg.sender, address(this), amount);
-        uint256 _amount = amount.mul(rate);
-        _mint(msg.sender, _amount.mul(swapFEE));
+        (bool sent) = usdt.transferFrom(msg.sender, address(this), amount);
+        require(sent, "Failed to transfer USDC from user to vendor");
+        uint256 _rate = getRate();
+        uint256 _amount = amount.mul(_rate).div(10**18).mul(995).div(1000);
+        require(_amount > 0, "Pool: Amount is too small");
+        _mint(msg.sender, _amount);
+        // _mint(msg.sender, amount);
     }
 
     function burn( uint256 amount) public {
-        uint256 _amount = amount.div(rate);
-        _burn(msg.sender, _amount);
-        usdt.transferFrom(address(this), msg.sender, _amount.mul(swapFEE));
+        // _burn(msg.sender, amount);
+        require(amount > 0, "Pool: Amount is too small");
+        uint256 _rate = getRate();
+        uint256 _amount = amount.div(_rate).mul(10**18).mul(995).div(1000);
+        require(_amount > 0, "Pool: USDC Amount is too small");
+        (bool sent) = usdt.transferFrom(address(this), msg.sender, _amount);
+        require(sent, "Failed to transfer USDC from vendor to user");
+        _burn(msg.sender, amount);
     }
 
-//     function burn(uint amount) override external {
-//         require(presenter == _msgSender(), "N07Token: presenter only");
-//         _burn(_msgSender(), amount);
-//   }
+    function withdrawALL() public onlyOwner {
+        require(usdt.transfer(msg.sender, usdt.balanceOf(address(this))), 'Unable to transfer');
+        withdrawLink();
+    }
 }
